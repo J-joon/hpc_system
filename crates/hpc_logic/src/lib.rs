@@ -93,11 +93,16 @@ impl Hub {
 
             // 3. Check Pokes (for ALL registered generators)
             let mut pokes = Vec::new();
-            for gid in self.registry.generators.keys() {
+            for (gid, spec) in self.registry.generators.iter() {
                 if let Some(poke) = self.check_poke(gid, &e) {
                     pokes.push(poke.clone());
-                    // 4. Notify transport
-                    self.transport.send_poke(&poke).await?;
+                    // 4. Notify transport with callback URL if available
+                    if let Some(url) = &spec.callback_url {
+                        println!("[Hub] Sending poke to {} at {}", gid, url);
+                        self.transport.send_poke_to_url(&poke, url).await?;
+                    } else {
+                        self.transport.send_poke(&poke).await?;
+                    }
                 }
             }
             Ok(pokes)

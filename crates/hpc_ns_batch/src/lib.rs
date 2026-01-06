@@ -79,6 +79,7 @@ pub fn get_batch_generator_spec() -> GeneratorSpec {
     GeneratorSpec {
         delta_fn: batch_delta_fn,
         kind: "batch".to_string(),
+        callback_url: None,
     }
 }
 

@@ -309,6 +309,7 @@ pub struct GeneratorSpec {
     #[serde(skip, default = "dummy_delta_fn")]
     pub delta_fn: DeltaFn,
     pub kind: String,
+    pub callback_url: Option<String>,
 }
 
 impl std::fmt::Debug for GeneratorSpec {

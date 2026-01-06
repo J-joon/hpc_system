@@ -24,6 +24,9 @@ pub trait StorageBackend: Send + Sync {
 pub trait TransportBackend: Send + Sync {
     /// Pushes a notification (poke) to a specific generator.
     async fn send_poke(&self, poke: &Poke) -> DynResult<()>;
+
+    /// Pushes a notification (poke) to a specific URL.
+    async fn send_poke_to_url(&self, poke: &Poke, url: &str) -> DynResult<()>;
 }
 
 #[async_trait]
