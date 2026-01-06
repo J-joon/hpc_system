@@ -27,7 +27,7 @@ enum Commands {
     },
     /// Runs the node as a Relay
     Relay {
-        #[arg(short, long, default_value = "http://localhost:8080")]
+        #[arg(long, default_value = "http://localhost:8080")]
         hub_url: String,
         #[arg(short, long, default_value_t = 8081)]
         port: u16,
@@ -36,7 +36,7 @@ enum Commands {
     },
     /// Submits a job to the hub
     Submit {
-        #[arg(short, long, default_value = "http://localhost:8080")]
+        #[arg(long, default_value = "http://localhost:8080")]
         hub_url: String,
     },
 }
