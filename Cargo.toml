@@ -9,6 +9,7 @@ members = [
     "crates/hpc_executor_relay",
     "crates/hpc_node",           # [BIN] The Bootstrapper
     "crates/hpc_ns_batch",
+    "crates/hpc_ns_simulation",
     "crates/hpc_resource_monitor",
 ]
 

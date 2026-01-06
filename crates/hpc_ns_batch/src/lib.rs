@@ -33,9 +33,13 @@ impl BatchJob {
 
 pub fn batch_delta_fn(e: &Event) -> Facts {
     let mut facts = Facts::bot();
-    
-    if e.kind == "SubmitJob" {
-        if let Some(job_id) = &e.payload.ctx.job_id {
+    let job_id = match &e.payload.ctx.job_id {
+        Some(id) => id.clone(),
+        None => return facts,
+    };
+
+    match e.kind.as_str() {
+        "SubmitJob" => {
             if let Some(batch_job) = BatchJob::from_spec(&e.payload.spec) {
                 let job_info = JobInfo {
                     phase: 1, // Phase 1: Submitted
@@ -43,9 +47,30 @@ pub fn batch_delta_fn(e: &Event) -> Facts {
                     priority: e.payload.ctx.priority.unwrap_or(0),
                     resources: WriteOnce::new(batch_job.cpu),
                 };
-                facts.jobs.insert(job_id.clone(), job_info);
+                facts.jobs.insert(job_id, job_info);
             }
         }
+        "JobStarted" => {
+            let mut job_info = JobInfo::default();
+            job_info.phase = 2; // Phase 2: Running
+            facts.jobs.insert(job_id, job_info);
+        }
+        "JobFinished" => {
+            let mut job_info = JobInfo::default();
+            job_info.phase = 3; // Phase 3: Success
+            facts.jobs.insert(job_id, job_info);
+        }
+        "JobFailed" => {
+            let mut job_info = JobInfo::default();
+            job_info.phase = 4; // Phase 4: Failed
+            facts.jobs.insert(job_id, job_info);
+        }
+        "JobAborted" => {
+            let mut job_info = JobInfo::default();
+            job_info.phase = 5; // Phase 5: Aborted
+            facts.jobs.insert(job_id, job_info);
+        }
+        _ => {}
     }
     
     facts
@@ -82,4 +107,3 @@ pub fn get_batch_generator_spec() -> GeneratorSpec {
         callback_url: None,
     }
 }
-

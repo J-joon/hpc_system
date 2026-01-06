@@ -24,6 +24,7 @@ Independent modules must provide a `NamespaceSpec` and a `GeneratorSpec` to the 
 | Module | Namespace ID | WorkSpec (Schema) | WF Logic |
 |---|---|---|---|
 | `hpc_ns_batch` | `batch` | `command` (String), `cpu` (Int), `memory` (Int) | Required fields presence and type validation. |
+| `hpc_ns_simulation` | `simulation` | `env_cmd` (String), `policy_cmd` (String) | Required fields presence and type validation. |
 | `hpc_resource_monitor` | `monitor` | `cpu_usage` (String), `mem_used_kb` (Int), `mem_total_kb` (Int) | Required fields presence and type validation. |
 
 - `hpc_executor_relay`: Component used by Relays to execute jobs received from the Hub.

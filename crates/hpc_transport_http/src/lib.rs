@@ -124,3 +124,14 @@ pub async fn pull_from_hub(hub_url: &str, gid: &str, cursor: u64) -> DynResult<F
         .await?;
     Ok(facts)
 }
+
+pub async fn ingest_event_to_hub(hub_url: &str, event: &Event) -> DynResult<Vec<Poke>> {
+    let client = reqwest::Client::new();
+    let pokes = client.post(format!("{}/ingest", hub_url))
+        .json(event)
+        .send()
+        .await?
+        .json::<Vec<Poke>>()
+        .await?;
+    Ok(pokes)
+}
