@@ -1,8 +1,9 @@
 use std::sync::Arc;
+use std::collections::HashMap;
 use hpc_core::contracts::{StorageBackend, TransportBackend, DynResult};
 use hpc_core::domain::{
     Event, Facts, Registration, ControlRequest, Cursor, Poke, 
-    FieldReq, FieldType, GenId, WorkSpec
+    FieldReq, FieldType, GenId, WorkSpec, DeltaFn
 };
 use hpc_core::lattice::{Lattice, OrderBot};
 
@@ -10,6 +11,7 @@ pub struct Hub {
     storage: Arc<dyn StorageBackend>,
     transport: Arc<dyn TransportBackend>,
     pub registry: Registration,
+    pub delta_fns: HashMap<String, DeltaFn>,
 }
 
 impl Hub {
@@ -21,6 +23,7 @@ impl Hub {
             storage,
             transport,
             registry: Registration::default(),
+            delta_fns: HashMap::new(),
         }
     }
 
@@ -69,7 +72,12 @@ impl Hub {
     /// 4.4) Delta Logic (Per Generator)
     pub fn compute_delta(&self, gid: &GenId, e: &Event) -> Facts {
         if let Some(spec) = self.registry.generators.get(gid) {
-            (spec.delta_fn)(e)
+            // Try local registry first (for serialized/distributed setups), then fallback to the spec's fn
+            if let Some(f) = self.delta_fns.get(&spec.kind) {
+                f(e)
+            } else {
+                (spec.delta_fn)(e)
+            }
         } else {
             OrderBot::bot()
         }
@@ -95,6 +103,7 @@ impl Hub {
             let mut pokes = Vec::new();
             for (gid, spec) in self.registry.generators.iter() {
                 if let Some(poke) = self.check_poke(gid, &e) {
+                    println!("[Hub] Generated poke for generator: {}", gid);
                     pokes.push(poke.clone());
                     // 4. Notify transport with callback URL if available
                     if let Some(url) = &spec.callback_url {

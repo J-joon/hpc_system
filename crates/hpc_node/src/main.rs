@@ -85,7 +85,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             println!("Initializing HPC Hub on port {}...", port);
             let storage: Arc<dyn StorageBackend> = Arc::new(SqliteStorage::new("hpc_hub.db").await?);
             let transport: Arc<dyn TransportBackend> = Arc::new(HttpTransport::new());
-            let hub = Hub::new(storage, transport);
+            let mut hub = Hub::new(storage, transport);
+            
+            // Register known delta functions for the demo
+            hub.delta_fns.insert("batch".to_string(), hpc_ns_batch::batch_delta_fn);
+
             run_hub_server(hub, port).await?;
         }
         Commands::Relay { hub_url, port, ns } => {
