@@ -8,6 +8,8 @@ edition = "2024"
 
 [dependencies]
 hpc_core = { path = "../hpc_core" }
+hpc_logic = { path = "../hpc_logic" }
+futures-executor = "0.3"
 
 # Server
 axum = "0.7"

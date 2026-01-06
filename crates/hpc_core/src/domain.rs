@@ -300,8 +300,13 @@ pub struct NamespaceSpec {
 
 pub type DeltaFn = fn(&Event) -> Facts;
 
-#[derive(Clone)]
+fn dummy_delta_fn() -> DeltaFn {
+    |_| OrderBot::bot()
+}
+
+#[derive(Clone, Serialize, Deserialize)]
 pub struct GeneratorSpec {
+    #[serde(skip, default = "dummy_delta_fn")]
     pub delta_fn: DeltaFn,
     pub kind: String,
 }
@@ -318,7 +323,7 @@ pub struct Registration {
     pub generators: HashMap<GenId, GeneratorSpec>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ControlRequest {
     RegisterNamespace(NamespaceId, NamespaceSpec),
     RegisterGenerator(GenId, GeneratorSpec),
