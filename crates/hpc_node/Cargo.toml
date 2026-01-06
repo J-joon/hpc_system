@@ -10,6 +10,7 @@ hpc_storage_sqlite = { path = "../hpc_storage_sqlite" }
 hpc_transport_http = { path = "../hpc_transport_http" }
 hpc_executor_relay = { path = "../hpc_executor_relay" }
 hpc_ns_batch = { path = "../hpc_ns_batch" }
+hpc_resource_monitor = { path = "../hpc_resource_monitor" }
 
 tokio = { version = "1.32", features = ["full"] }
 libloading = "0.8"

@@ -39,6 +39,15 @@ enum Commands {
         #[arg(long, default_value = "http://localhost:8080")]
         hub_url: String,
     },
+    /// Starts a hardware resource monitor
+    Monitor {
+        #[arg(long, default_value = "http://localhost:8080")]
+        hub_url: String,
+        #[arg(short, long, default_value = "node-001")]
+        node_id: String,
+        #[arg(short, long, default_value_t = 5)]
+        interval: u64,
+    },
 }
 
 struct RelayState {
@@ -89,6 +98,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             
             // Register known delta functions for the demo
             hub.delta_fns.insert("batch".to_string(), hpc_ns_batch::batch_delta_fn);
+            hub.delta_fns.insert("monitor".to_string(), hpc_resource_monitor::monitor_delta_fn);
 
             run_hub_server(hub, port).await?;
         }
@@ -156,6 +166,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             println!("Hub Response: {:?}", resp.status());
             let pokes: Vec<Poke> = resp.json().await?;
             println!("Generated {} pokes", pokes.len());
+        }
+        Commands::Monitor { hub_url, node_id, interval } => {
+            println!("Registering monitor namespace with Hub at {}...", hub_url);
+            
+            use hpc_resource_monitor::{
+                get_monitor_namespace_spec, get_monitor_generator_spec, MONITOR_NS_ID, MONITOR_GEN_ID
+            };
+
+            // Register the namespace and generator formally via control plane
+            register_with_hub(&hub_url, ControlRequest::RegisterNamespace(
+                MONITOR_NS_ID.to_string(), 
+                get_monitor_namespace_spec()
+            )).await?;
+            
+            register_with_hub(&hub_url, ControlRequest::RegisterGenerator(
+                MONITOR_GEN_ID.to_string(), 
+                get_monitor_generator_spec()
+            )).await?;
+
+            println!("Starting resource monitor for node {} reporting to {} every {}s...", node_id, hub_url, interval);
+            let mut monitor = hpc_resource_monitor::ResourceMonitor::new(hub_url, node_id, interval);
+            monitor.run().await?;
         }
     }
 
