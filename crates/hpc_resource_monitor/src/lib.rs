@@ -1,9 +1,10 @@
 use std::time::Duration;
-use sysinfo::{CpuExt, System, SystemExt};
+use sysinfo::System;
 use hpc_core::domain::{
     Event, Facts, NodeInfo, NamespaceSpec, FieldReq, FieldType, 
-    GeneratorSpec, WriteOnce, OrderBot, Payload, SysContext
+    GeneratorSpec, WriteOnce, Payload, SysContext
 };
+use hpc_core::lattice::OrderBot;
 use std::collections::HashMap;
 use anyhow::Result;
 
