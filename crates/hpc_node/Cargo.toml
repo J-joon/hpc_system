@@ -1,0 +1,21 @@
+[package]
+name = "hpc_node"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+hpc_core = { path = "../hpc_core" }
+hpc_logic = { path = "../hpc_logic" }
+hpc_storage_sqlite = { path = "../hpc_storage_sqlite" }
+hpc_transport_http = { path = "../hpc_transport_http" }
+hpc_executor_relay = { path = "../hpc_executor_relay" }
+hpc_ns_batch = { path = "../hpc_ns_batch" }
+
+tokio = { version = "1.32", features = ["full"] }
+libloading = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0" # Simplifies error handling in the main loop
+async-trait = "0.1"
+tracing = "0.1"
+tracing-subscriber = "0.3"

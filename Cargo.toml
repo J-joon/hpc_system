@@ -1,0 +1,21 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "crates/hpc_core",           # [LIB] Shared Traits (The Protocol)
+    "crates/hpc_logic",          # [LIB] Pure Logic (State Machine)
+    "crates/hpc_storage_sqlite",   # [PLUGIN] Persistence Implementation
+    "crates/hpc_transport_http", # [PLUGIN] Network/Socket Implementation
+    "crates/hpc_executor_relay",
+    "crates/hpc_node",           # [BIN] The Bootstrapper
+    "crates/hpc_ns_batch",
+]
+
+[workspace.dependencies]
+tokio = { version = "1.32", features = ["full"] }
+async-trait = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+uuid = { version = "1.4", features = ["v4", "fast-rng"] }
+libloading = "0.8" # Critical for runtime plugin loading

@@ -1,0 +1,9 @@
+[package]
+name = "hpc_ns_batch"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+hpc_core = { path = "../hpc_core" }
+serde = { version = "1.0", features = ["derive"] }
+

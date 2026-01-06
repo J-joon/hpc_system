@@ -1,0 +1,12 @@
+[package]
+name = "hpc_executor_relay"
+version = "0.1.0"
+edition = "2024"
+
+# [lib]
+# crate-type = ["dylib"]
+
+[dependencies]
+hpc_core = { path = "../hpc_core" }
+async-trait = "0.1"
+tokio = { version = "1.32", features = ["full"] }
